@@ -20,6 +20,9 @@ account: provides operations for accounts
 client : used to initialize the client and oper
 config : overall situation config
 transfer : provides methods for transactions
+net : provides methods for net
+coin : provides methods for coin
+net : provides methods for net
 faucet : faucet related methods, valid in Mode::DEV Mode::TEST mode
 utils : internal utils
 ```
