@@ -16,7 +16,6 @@ pub enum Mode {
 }
 
 // client abstraction
-#[derive(Debug)]
 pub struct AptosClient {
     mode: Mode,
     rest_client: Option<Client>,
