@@ -1,4 +1,4 @@
-# <center> Aptos light sdk </center>  
+# <center> Aptos Light SDK </center>  
 It is used to simplify complex operations on the aptos network, reduce the difficulty of aptos development, and allow more people to happily build on the aptos network. <br>
 **continuous building** 🔨
 ## Use
