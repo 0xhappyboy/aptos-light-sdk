@@ -37,8 +37,7 @@ account::create_new_account()
 create a account by private key
 #### Examples
 ```rust
-let mut aptos_client = AptosClient::new(Mode::DEV);
-account::create_account_by_private_key(&mut aptos_client,"private_key")
+account::create_account_by_private_key("private_key")
 ```
 ### account::create_vanity_account
 create a vanity account

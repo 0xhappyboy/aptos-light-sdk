@@ -1,6 +1,7 @@
 //! used to initialize the client and oper
 use std::{collections::HashMap, str::FromStr, sync::Mutex};
 
+use anyhow::Ok;
 use aptos_sdk::{
     coin_client::CoinClient,
     rest_client::{Client, FaucetClient},

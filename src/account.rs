@@ -1,6 +1,11 @@
 //! Provides operations for accounts
 use anyhow::Ok;
-use aptos_sdk::{coin_client::CoinClient, crypto::hash::TestOnlyHash, types::LocalAccount};
+use aptos_sdk::{
+    coin_client::CoinClient,
+    crypto::{hash::TestOnlyHash, ValidCryptoMaterialStringExt},
+    rest_client::Client,
+    types::LocalAccount,
+};
 
 use crate::client::AptosClient;
 
@@ -11,9 +16,9 @@ use crate::client::AptosClient;
 /// ```
 /// create_new_account()
 /// ```
-pub fn create_new_account() -> Result<LocalAccount, String> {
+pub fn create_new_account() -> LocalAccount {
     let mut account = LocalAccount::generate(&mut rand::rngs::OsRng);
-    Ok(account)
+    account
 }
 
 /// create a account by private key
@@ -21,15 +26,11 @@ pub fn create_new_account() -> Result<LocalAccount, String> {
 /// # Examples
 ///
 /// ```
-/// let aptos_client = AptosClient::new(Mode::DEV);
-/// create_account_by_private_key(&aptos_client,private_key)
+/// create_account_by_private_key(private_key)
 /// ```
-pub fn create_account_by_private_key(
-    aptos_client: &mut AptosClient,
-    private_key: &str,
-) -> Result<LocalAccount, String> {
+pub fn create_account_by_private_key(private_key: &str) -> LocalAccount {
     let account = LocalAccount::from_private_key(private_key, 0).unwrap();
-    Ok(account)
+    account
 }
 
 /// create a vanity account
@@ -40,12 +41,12 @@ pub fn create_account_by_private_key(
 /// let aptos_client = AptosClient::new(Mode::DEV);
 /// create_vanity_account("6666".to_string(),"8888".to_string())
 /// ```
-pub fn create_vanity_account(start: String, end: String) -> Result<LocalAccount, String> {
+pub fn create_vanity_account(start: &str, end: &str) -> LocalAccount {
     // create new account
-    let mut account: Result<LocalAccount, String> = create_new_account();
+    let mut account: LocalAccount = create_new_account();
     loop {
         // get public key string
-        let mut public_key_string = get_public_key(account).unwrap();
+        let mut public_key_string = get_public_key(&account);
         public_key_string = public_key_string.replace("0x", "");
         if (public_key_string.starts_with(start) && public_key_string.ends_with(end)) {
             // to meet the conditions
@@ -54,7 +55,7 @@ pub fn create_vanity_account(start: String, end: String) -> Result<LocalAccount,
             account = create_new_account();
         }
     }
-    Ok(account)
+    account
 }
 
 /// get the public key string of an account
@@ -64,8 +65,8 @@ pub fn create_vanity_account(start: String, end: String) -> Result<LocalAccount,
 /// ```
 /// get_public_key(account)
 /// ```
-pub fn get_public_key(account: &LocalAccount) -> Result<String, String> {
-    Ok(account.address().to_hex_literal())
+pub fn get_public_key(account: &LocalAccount) -> String {
+    account.address().to_hex_literal()
 }
 
 /// get the private key string of an account
@@ -75,8 +76,8 @@ pub fn get_public_key(account: &LocalAccount) -> Result<String, String> {
 /// ```
 /// get_private_key(account)
 /// ```
-pub fn get_private_key(account: &LocalAccount) -> Result<String, String> {
-    Ok(account.private_key().to_encoded_string()?)
+pub fn get_private_key(account: &LocalAccount) -> String {
+    account.private_key().to_encoded_string().unwrap()
 }
 
 /// get account balance
@@ -86,10 +87,14 @@ pub fn get_private_key(account: &LocalAccount) -> Result<String, String> {
 /// ```
 /// get_account_balance(account)
 /// ```
-pub async fn get_account_balance(
-    aptos_client: &mut AptosClient,
-    account: &LocalAccount,
-) -> Result<String, String> {
-    let coin_client = CoinClient::new(&aptos_client.rest_client());
-    Ok(coin_client.get_account_balance(&account.address()).await)
+pub async fn get_account_balance(aptos_client: &mut AptosClient, account: &LocalAccount) -> u64 {
+    let rest_client: Client = aptos_client.rest_client().clone().unwrap();
+    let coin_client = CoinClient::new(&rest_client);
+    match coin_client.get_account_balance(&account.address()).await {
+        Result::Ok(b) => return b,
+        Result::Err(e) => {
+            println!("get account balance error, e={}", e);
+            return 0;
+        }
+    }
 }

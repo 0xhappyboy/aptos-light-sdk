@@ -1,6 +1,9 @@
 /*! used to simplify operations on aptos networks. */
 pub mod account;
-pub mod utils;
-pub mod transfer;
 pub mod client;
+pub mod coin;
 pub mod config;
+pub mod net;
+pub mod nft;
+pub mod transfer;
+pub mod utils;
