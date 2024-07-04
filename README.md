@@ -20,6 +20,7 @@ account: provides operations for accounts
 client : used to initialize the client and oper
 config : overall situation config
 transfer : provides methods for transactions
+faucet : faucet related methods, valid in Mode::DEV Mode::TEST mode
 utils : internal utils
 ```
 ## Function
@@ -27,22 +28,40 @@ utils : internal utils
 create a account
 #### Examples
 ```rust
-let aptos_client = AptosClient::new(Mode::DEV);
-create_new_account(aptos_client)
+account::create_new_account()
 ```
 ### account::create_account_by_private_key
 create a account by private key
 #### Examples
 ```rust
-let aptos_client = AptosClient::new(Mode::DEV);
-create_account_by_private_key(aptos_client,private_key)
+let mut aptos_client = AptosClient::new(Mode::DEV);
+account::create_account_by_private_key(&mut aptos_client,"private_key")
 ```
 ### account::create_vanity_account
 create a vanity account
 #### Examples
 ```rust
-let aptos_client = AptosClient::new(Mode::DEV);
-create_vanity_account("6666".to_string(),"8888".to_string())
+/// trying to create an account whose public key meets the conditions starting with 6 and ending with 8
+account::create_vanity_account("6666".to_string(),"8888".to_string())
+```
+### account::get_public_key
+get the public key string of an account
+#### Examples
+```rust
+get_public_key(&account).unwrap();
+```
+### account::get_private_key
+get the private key string of an account
+#### Examples
+```rust
+get_private_key(&account).unwrap();
+```
+### account::get_account_balance
+get account balance
+#### Examples
+```rust
+let mut aptos_client = AptosClient::new(Mode::DEV);
+get_account_balance(&mut aptos_client,&account).unwrap();
 ```
 ### client::AptosClient::new
 initialize client instance
@@ -64,4 +83,12 @@ send a txn hash
 let aptos_client = AptosClient::new(Mode::DEV);
 let txn = crate_txn_hash(aptos_client,from address,to address,amount)?
 send_txn_hash(aptos_client,txn)
+```
+### faucet::get_faucet_coin
+use the designated account to obtain faucet tokens
+#### Examples
+```rust
+let aptos_client = AptosClient::new(Mode::DEV);
+let mut account = create_new_account();
+faucet::get_faucet_coin(&aptos_client,account,10)
 ```
