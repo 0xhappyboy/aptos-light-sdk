@@ -37,7 +37,7 @@ pub async fn create_txn_hash(
 ///
 /// ```
 /// let aptos_client = AptosClient::new(Mode::DEV);
-/// let txn = crate_txn_hash(aptos_client,from address,to address,amount)?
+/// let txn = crate_txn_hash(&aptos_client,from address,to address,amount)?
 /// send_txn_hash(aptos_client,txn)
 /// ```
 pub async fn send_txn_hash(
