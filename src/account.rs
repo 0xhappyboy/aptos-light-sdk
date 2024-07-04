@@ -87,7 +87,7 @@ pub fn get_private_key(account: &LocalAccount) -> String {
 /// ```
 /// get_account_balance(account)
 /// ```
-pub async fn get_account_balance(aptos_client: &mut AptosClient, account: &LocalAccount) -> u64 {
+pub async fn get_account_balance(aptos_client: &AptosClient, account: &LocalAccount) -> u64 {
     let rest_client: Client = aptos_client.rest_client().clone().unwrap();
     let coin_client = CoinClient::new(&rest_client);
     match coin_client.get_account_balance(&account.address()).await {

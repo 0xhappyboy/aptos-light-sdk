@@ -6,6 +6,7 @@ It is used to simplify complex operations on the aptos network, reduce the diffi
 ### Cargo.toml
 [dependencies]
 aptos-light-sdk = {git = "https://github.com/0xhappyboy/aptos-light-sdk", branch = "main"}
+tokio = {version = "1.4", features = ["full"]}
 
 [patch.crates-io]
 merlin = {git = "https://github.com/aptos-labs/merlin"}
