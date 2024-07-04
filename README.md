@@ -1,6 +1,6 @@
-# <center> aptos light sdk </center>  
-used to simplify operations on aptos networks. <br>
-continuous building 🔨
+# <center> Aptos light sdk </center>  
+It is used to simplify complex operations on the aptos network, reduce the difficulty of aptos development, and allow more people to happily build on the aptos network. <br>
+**continuous building** 🔨
 ## Use
 ```
 aptos-light-sdk = {git = "https://github.com/0xhappyboy/aptos-light-sdk", branch = "main"}
