@@ -3,10 +3,19 @@ It is used to simplify complex operations on the aptos network, reduce the diffi
 **continuous building** 🔨
 ## Use
 ```
+### Cargo.toml
+[dependencies]
 aptos-light-sdk = {git = "https://github.com/0xhappyboy/aptos-light-sdk", branch = "main"}
+
+[patch.crates-io]
+merlin = {git = "https://github.com/aptos-labs/merlin"}
+x25519-dalek = {git = "https://github.com/aptos-labs/x25519-dalek", branch = "zeroize_v1"}
+### .cargo/config.toml
+[build]
+rustflags = ["--cfg", "tokio_unstable"]
 ```
 ## Module
-```
+```rust
 account: provides operations for accounts
 client : used to initialize the client and oper
 config : overall situation config
