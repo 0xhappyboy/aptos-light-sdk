@@ -3,6 +3,10 @@ use std::str::FromStr;
 
 use once_cell::sync::Lazy;
 use url::Url;
+use aptos_sdk::{
+    coin_client::CoinClient,
+    rest_client::{faucet, Client, FaucetClient},
+};
 
 pub static APTOS_DEV_NET_URL: Lazy<Url> = Lazy::new(|| {
     Url::from_str(
@@ -40,3 +44,6 @@ pub static APTOS_FAUCET_URL: Lazy<Url> = Lazy::new(|| {
     )
     .unwrap()
 });
+// faucet client
+pub static FAUCET_CLIENT: Lazy<FaucetClient> =
+    Lazy::new(|| FaucetClient::new(APTOS_FAUCET_URL.clone(), APTOS_TEST_NET_URL.clone()));

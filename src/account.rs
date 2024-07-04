@@ -1,4 +1,6 @@
 //! Provides operations for accounts
+use crate::client::AptosClient;
+use crate::utils;
 use anyhow::Ok;
 use aptos_sdk::{
     coin_client::CoinClient,
@@ -6,8 +8,6 @@ use aptos_sdk::{
     rest_client::Client,
     types::LocalAccount,
 };
-
-use crate::client::AptosClient;
 
 /// create a account
 ///
@@ -17,7 +17,7 @@ use crate::client::AptosClient;
 /// create_new_account()
 /// ```
 pub fn create_new_account() -> LocalAccount {
-    let mut account = LocalAccount::generate(&mut rand::rngs::OsRng);
+    let account = LocalAccount::generate(&mut rand::rngs::OsRng);
     account
 }
 
@@ -87,14 +87,14 @@ pub fn get_private_key(account: &LocalAccount) -> String {
 /// ```
 /// get_account_balance(account)
 /// ```
-pub async fn get_account_balance(aptos_client: &AptosClient, account: &LocalAccount) -> u64 {
+pub async fn get_account_balance(aptos_client: &AptosClient, account: &LocalAccount) -> f64 {
     let rest_client: Client = aptos_client.rest_client().clone().unwrap();
     let coin_client = CoinClient::new(&rest_client);
     match coin_client.get_account_balance(&account.address()).await {
-        Result::Ok(b) => return b,
+        Result::Ok(b) => return utils::unwrap_coin_amount(b),
         Result::Err(e) => {
             println!("get account balance error, e={}", e);
-            return 0;
+            return 0.0;
         }
     }
 }
