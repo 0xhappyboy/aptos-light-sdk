@@ -15,6 +15,8 @@ pub enum Mode {
     DEV,
 }
 
+// client abstraction
+#[derive(Debug)]
 pub struct AptosClient {
     mode: Mode,
     rest_client: Option<Client>,
@@ -22,6 +24,13 @@ pub struct AptosClient {
 }
 
 impl AptosClient {
+    /// Initialize client instance
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// AptosClient::new(Mode::DEV)
+    /// ```
     pub fn new(mode: Mode) -> Self {
         match mode {
             Mode::MAIN => AptosClient {

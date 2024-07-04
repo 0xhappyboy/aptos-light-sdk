@@ -1,3 +1,4 @@
+//! overall situation config
 use std::str::FromStr;
 
 use once_cell::sync::Lazy;
