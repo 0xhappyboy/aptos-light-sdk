@@ -87,6 +87,21 @@ let aptos_client = AptosClient::new(Mode::DEV);
 let txn = crate_txn_hash(aptos_client,from address,to address,amount)?
 send_txn_hash(aptos_client,txn)
 ```
+### transfer::batch_transfer
+batch transfer
+#### Examples
+```rust
+let aptos_client = AptosClient::new(Mode::DEV);
+let mut from = account::create_account_by_private_key("0x");
+let mut to_1 = account::create_account_by_private_key("0x");
+let mut to_2 = account::create_account_by_private_key("0x");
+
+let mut v = vec![];
+v.push(to_1);
+v.push(to_2);
+
+transfer::batch_transfer(&aptos_client, &mut from, &v, 0.1).await;
+```
 ### faucet::get_faucet_coin
 use the designated account to obtain faucet tokens
 #### Examples
