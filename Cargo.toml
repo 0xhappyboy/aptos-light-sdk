@@ -1,0 +1,27 @@
+[package]
+authors = ["happyboy <superhappyboy1995@gmail.com>"]
+description = "used to simplify operations on aptos networks."
+edition = "2021"
+keywords = [
+  "aptos",
+  "blockchain",
+  "crypto",
+]
+license = "GPL-3.0"
+name = "aptos-light-sdk"
+readme = "README.md"
+repository = "https://github.com/0xhappyboy/blockchain-arsenal/tree/main/aptos-light-sdk"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1.0.86"
+aptos-sdk = {git = "https://github.com/aptos-labs/aptos-core", branch = "devnet"}
+once_cell = "1.19.0"
+rand = "0.7.0"
+tokio = {version = "1.4", features = ["full"]}
+url = "2.5.2"
+lazy_static = "1.5.0"
+
+[patch.crates-io]
+merlin = {git = "https://github.com/aptos-labs/merlin"}
+x25519-dalek = {git = "https://github.com/aptos-labs/x25519-dalek", branch = "zeroize_v1"}
