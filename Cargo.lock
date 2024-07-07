@@ -607,7 +607,9 @@ name = "aptos-light-sdk"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "aptos-crypto",
  "aptos-sdk",
+ "aptos-types",
  "lazy_static",
  "once_cell",
  "rand 0.7.3",

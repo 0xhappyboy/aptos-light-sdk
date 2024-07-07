@@ -2,9 +2,7 @@
 use crate::client::AptosClient;
 use crate::utils;
 use aptos_sdk::{
-    coin_client::CoinClient,
-    crypto::{hash::TestOnlyHash, ValidCryptoMaterialStringExt},
-    rest_client::Client,
+    coin_client::CoinClient, crypto::ValidCryptoMaterialStringExt, rest_client::Client,
     types::LocalAccount,
 };
 

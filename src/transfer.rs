@@ -1,14 +1,9 @@
 //! Provides methods for transactions
-
-use std::time::{SystemTime, UNIX_EPOCH};
-
 use anyhow::{Context, Ok};
 use aptos_sdk::{
-    coin_client::CoinClient,
+    coin_client::{CoinClient, TransferOptions},
     rest_client::{Client, PendingTransaction},
-    types::
-        LocalAccount
-    ,
+    types::LocalAccount,
 };
 
 use crate::{client::AptosClient, utils::wrap_coin_amount};
@@ -75,11 +70,7 @@ impl Transaction {
             from: f,
             to: t,
             amount: a,
-            transaction_options: if o.is_none() {
-                TransactionOptions::default()
-            } else {
-                o.unwrap()
-            },
+            transaction_options: o.unwrap_or_default(),
         })
     }
     /// create a txn hash
@@ -137,7 +128,7 @@ impl Transaction {
                     &mut self.from,
                     to_accout.address(),
                     wrap_coin_amount(self.amount),
-                    None,
+                    Some(TransferOptions::default()),
                 )
                 .await;
             println!("{:?}", txn_hash);

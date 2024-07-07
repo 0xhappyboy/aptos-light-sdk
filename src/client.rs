@@ -1,11 +1,6 @@
 //! used to initialize the client and oper
-use std::{borrow::Borrow, collections::HashMap, str::FromStr, sync::Mutex};
 
-use anyhow::Ok;
-use aptos_sdk::{
-    coin_client::CoinClient,
-    rest_client::{faucet, Client, FaucetClient},
-};
+use aptos_sdk::rest_client::Client;
 
 use crate::config::{APTOS_DEV_NET_URL, APTOS_FAUCET_URL, APTOS_MAIN_NET_URL, APTOS_TEST_NET_URL};
 

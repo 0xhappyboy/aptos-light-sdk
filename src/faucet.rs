@@ -20,7 +20,7 @@ pub async fn get_faucet_coin(
     account: &LocalAccount,
     coin_amount: f64,
 ) {
-    FAUCET_CLIENT
+    let _ = FAUCET_CLIENT
         .fund(account.address(), utils::wrap_coin_amount(coin_amount))
         .await;
 }
