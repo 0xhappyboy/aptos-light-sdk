@@ -1,7 +1,6 @@
 //! Provides operations for accounts
 use crate::client::AptosClient;
 use crate::utils;
-use anyhow::Ok;
 use aptos_sdk::{
     coin_client::CoinClient,
     crypto::{hash::TestOnlyHash, ValidCryptoMaterialStringExt},

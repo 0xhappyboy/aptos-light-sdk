@@ -611,6 +611,7 @@ dependencies = [
  "lazy_static",
  "once_cell",
  "rand 0.7.3",
+ "tokio",
  "url",
 ]
 

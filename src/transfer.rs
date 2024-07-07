@@ -1,78 +1,147 @@
 //! Provides methods for transactions
 
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use anyhow::{Context, Ok};
 use aptos_sdk::{
     coin_client::CoinClient,
     rest_client::{Client, PendingTransaction},
-    types::LocalAccount,
+    types::
+        LocalAccount
+    ,
 };
 
 use crate::{client::AptosClient, utils::wrap_coin_amount};
 
-/// create a txn hash
-///
-/// # Examples
-///
-/// ```
-/// let aptos_client = AptosClient::new(Mode::DEV);
-/// crate_txn_hash(aptos_client,from address,to address,amount)
-/// ```
-pub async fn create_txn_hash(
-    aptos_client: &AptosClient,
-    from: &mut LocalAccount,
-    to: &mut LocalAccount,
-    amount: f64,
-) -> PendingTransaction {
-    let rest_client: Client = aptos_client.rest_client().clone().unwrap();
-    let coin_client = CoinClient::new(&rest_client);
-    let txn_hash: Result<aptos_sdk::rest_client::PendingTransaction, anyhow::Error> = coin_client
-        .transfer(from, to.address(), wrap_coin_amount(amount), None)
-        .await;
-    txn_hash.unwrap()
+pub struct ChainId {
+    chain_id: u8,
 }
 
-/// send a txn hash
-///
-/// # Examples
-///
-/// ```
-/// let aptos_client = AptosClient::new(Mode::DEV);
-/// let txn = crate_txn_hash(&aptos_client,from address,to address,amount)?
-/// send_txn_hash(aptos_client,txn)
-/// ```
-pub async fn send_txn_hash(aptos_client: &AptosClient, txn_hash: PendingTransaction) {
-    let rest_client: Client = aptos_client.rest_client().clone().unwrap();
-    rest_client.wait_for_transaction(&txn_hash).await;
+impl ChainId {
+    pub async fn new(aptos_client: &AptosClient) -> Result<Self, anyhow::Error> {
+        Ok(Self {
+            chain_id: aptos_client
+                .rest_client()
+                .clone()
+                .unwrap()
+                .get_index()
+                .await
+                .context("failed to get chain id")?
+                .inner()
+                .chain_id,
+        })
+    }
 }
 
-/// batch transfer
-///
-/// # Examples
-///
-/// ```
-/// let aptos_client = AptosClient::new(Mode::DEV);
-/// let mut from = account::create_account_by_private_key("0x");
-/// let mut to_1 = account::create_account_by_private_key("0x");
-/// let mut to_2 = account::create_account_by_private_key("0x");
-///
-/// let mut v = vec![];
-/// v.push(to_1);
-/// v.push(to_2);
-///
-/// transfer::batch_transfer(&aptos_client, &mut from, &v, 0.1).await;
-/// ```
-pub async fn batch_transfer(
-    aptos_client: &AptosClient,
-    from: &mut LocalAccount,
-    to: &Vec<LocalAccount>,
+/// transfer structure options
+#[derive(Debug, Clone)]
+pub struct TransactionOptions {
+    ///
+    pub max_gas_amount: u64,
+    pub gas_unit_price: u64,
+    pub timeout_sec: u64,
+    pub coin_type: String,
+}
+
+impl Default for TransactionOptions {
+    fn default() -> Self {
+        Self {
+            max_gas_amount: 5_000,
+            gas_unit_price: 100,
+            timeout_sec: 10,
+            coin_type: "0x1::aptos_coin::AptosCoin".to_string(),
+        }
+    }
+}
+
+/// all information required during the transaction process
+pub struct Transaction {
+    from: LocalAccount,
+    to: LocalAccount,
     amount: f64,
-) {
-    for (index, to_accout) in to.iter().enumerate() {
+    transaction_options: TransactionOptions,
+}
+
+impl Transaction {
+    /// create a new transaction object
+    pub async fn new(
+        aptos_client: &AptosClient,
+        f: LocalAccount,
+        t: LocalAccount,
+        a: f64,
+        o: Option<TransactionOptions>,
+    ) -> Result<Self, anyhow::Error> {
+        Ok(Self {
+            from: f,
+            to: t,
+            amount: a,
+            transaction_options: if o.is_none() {
+                TransactionOptions::default()
+            } else {
+                o.unwrap()
+            },
+        })
+    }
+    /// create a txn hash
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// ```
+    pub async fn create_txn_hash(&mut self, aptos_client: &AptosClient) -> PendingTransaction {
         let rest_client: Client = aptos_client.rest_client().clone().unwrap();
         let coin_client = CoinClient::new(&rest_client);
-        let txn_hash = coin_client
-            .transfer(from, to_accout.address(), wrap_coin_amount(amount), None)
-            .await;
-        //send_txn_hash(&aptos_client, txn).await;
+        let txn_hash: Result<aptos_sdk::rest_client::PendingTransaction, anyhow::Error> =
+            coin_client
+                .transfer(
+                    &mut self.from,
+                    self.to.address(),
+                    wrap_coin_amount(self.amount),
+                    None,
+                )
+                .await;
+        txn_hash.unwrap()
+    }
+    /// send a txn hash
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// ```
+    pub async fn send_txn_hash(&self, aptos_client: &AptosClient, txn_hash: PendingTransaction) {
+        let rest_client: Client = aptos_client.rest_client().clone().unwrap();
+        let _ = rest_client.wait_for_transaction(&txn_hash).await;
+    }
+    /// batch transfer
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// ```
+    pub async fn send(&mut self, aptos_client: &AptosClient) {
+        let txn = self.create_txn_hash(&aptos_client).await;
+        self.send_txn_hash(&aptos_client, txn).await;
+    }
+    /// batch transfer
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// ```
+    pub async fn batch_send(&mut self, aptos_client: &AptosClient, to: &Vec<&mut LocalAccount>) {
+        for (_index, to_accout) in to.iter().enumerate() {
+            let rest_client: Client = aptos_client.rest_client().clone().unwrap();
+            let coin_client = CoinClient::new(&rest_client);
+            let txn_hash = coin_client
+                .transfer(
+                    &mut self.from,
+                    to_accout.address(),
+                    wrap_coin_amount(self.amount),
+                    None,
+                )
+                .await;
+            println!("{:?}", txn_hash);
+            self.send_txn_hash(&aptos_client, txn_hash.unwrap()).await;
+        }
     }
 }

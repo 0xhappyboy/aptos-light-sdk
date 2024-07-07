@@ -2,11 +2,9 @@
 use crate::client;
 use crate::config::FAUCET_CLIENT;
 use crate::utils;
-use aptos_sdk::{
-    coin_client::CoinClient,
-    rest_client::{Client, FaucetClient},
-    types::LocalAccount,
-};
+use aptos_sdk::
+    types::LocalAccount
+;
 
 /// use the designated account to obtain faucet tokens
 ///
